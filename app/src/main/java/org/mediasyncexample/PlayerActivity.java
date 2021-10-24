@@ -1,0 +1,38 @@
+package org.mediasyncexample;
+
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+
+public class PlayerActivity extends AppCompatActivity implements SurfaceHolder.Callback {
+
+    private KkMediaPlayer mediaPlayer = new KkMediaPlayer();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_player);
+
+        SurfaceView msvPlay = (SurfaceView) findViewById(R.id.svPlay);
+        SurfaceHolder sh = msvPlay.getHolder();
+        sh.addCallback(this);
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        mediaPlayer.setSurface(surfaceHolder.getSurface());
+        mediaPlayer.setDataSource("http://vfx.mtime.cn/Video/2019/02/04/mp4/190204084208765161.mp4");
+        mediaPlayer.prepare();
+        mediaPlayer.start();
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+
+    }
+}
