@@ -1,5 +1,6 @@
 package org.mediasyncexample;
 
+import android.annotation.TargetApi;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -18,6 +19,7 @@ import android.view.Surface;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+@TargetApi(23)
 public class KkMediaPlayer {
 
     private final static String TAG = "KkMediaPlayer";
