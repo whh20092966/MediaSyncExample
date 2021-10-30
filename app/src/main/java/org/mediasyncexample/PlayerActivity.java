@@ -7,7 +7,8 @@ import android.view.SurfaceView;
 
 public class PlayerActivity extends AppCompatActivity implements SurfaceHolder.Callback {
 
-    private KkMediaPlayer mediaPlayer = new KkMediaPlayer();
+    //private KkMediaPlayer mediaPlayer = new KkMediaPlayer();
+    private MediaCodePlayer mediaPlayer = new MediaCodePlayer();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
