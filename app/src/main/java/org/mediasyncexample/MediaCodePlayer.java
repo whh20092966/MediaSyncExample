@@ -1,5 +1,8 @@
 package org.mediasyncexample;
 
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioTrack;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
@@ -12,11 +15,13 @@ public class MediaCodePlayer {
 
     private MediaCodec videoDecoder;
     private MediaExtractor videoExtractor;
+    private MediaCodecVideoTrack mediaCodecVideoTrack;
 
     private MediaCodec audioDecoder;
     private MediaExtractor audioExtractor;
+    private MediaCodecAudioTrack mediaCodecAudioTrack;
 
-    private MediaCodecVideoTrack mediaCodecVideoTrack;
+
 
     private int videoWidth = 0;
     private int videoHeight = 0;
@@ -46,30 +51,63 @@ public class MediaCodePlayer {
             return;
         }
 
-        videoTrack();
+        prepareVideo();
 
-        /*int trackCount = audioExtractor.getTrackCount();
+        int trackCount = audioExtractor.getTrackCount();
         for (int track=0; track<trackCount; ++track){
             MediaFormat mediaFormat = audioExtractor.getTrackFormat(track);
             String mime = mediaFormat.getString(MediaFormat.KEY_MIME);
             if (mime.startsWith("audio/")){
+
+                int sampleRate = mediaFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+                int channelCount = mediaFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
 
                 try {
                     audioDecoder = MediaCodec.createDecoderByType(mime);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
                 audioExtractor.selectTrack(track);
-
-                videoDecoder.configure(mediaFormat, surface, null, 0);
-
+                audioDecoder.configure(mediaFormat, null, null, 0);
                 Log.d(TAG, "duration: " + duration + " videoWidth: " + videoWidth + " videoHeight: " + videoHeight);
+
+                int channelConfig;
+                switch (channelCount) {
+                    case 1:
+                        channelConfig = AudioFormat.CHANNEL_OUT_MONO;
+                        break;
+                    case 2:
+                        channelConfig = AudioFormat.CHANNEL_OUT_STEREO;
+                        break;
+                    case 6:
+                        channelConfig = AudioFormat.CHANNEL_OUT_5POINT1;
+                        break;
+                    default:
+                        throw new IllegalArgumentException();
+                }
+
+                int minBufferSize =
+                        AudioTrack.getMinBufferSize(
+                                sampleRate,
+                                channelCount,
+                                AudioFormat.ENCODING_PCM_16BIT);
+
+                AudioTrack audioTrack = new AudioTrack(
+                        AudioManager.STREAM_MUSIC,
+                        sampleRate,
+                        channelConfig,
+                        AudioFormat.ENCODING_PCM_16BIT,
+                        minBufferSize,
+                        AudioTrack.MODE_STREAM);
+
+                mediaCodecAudioTrack = new MediaCodecAudioTrack(audioDecoder, audioExtractor, audioTrack);
                 break;
             }
-        }*/
+        }
     }
 
-    private void videoTrack() {
+    private void prepareVideo() {
         int trackCount = videoExtractor.getTrackCount();
         for (int track=0; track<trackCount; ++track){
             MediaFormat mediaFormat = videoExtractor.getTrackFormat(track);
@@ -77,7 +115,6 @@ public class MediaCodePlayer {
             if (mime.startsWith("video/")){
                 videoWidth = mediaFormat.getInteger(MediaFormat.KEY_WIDTH);
                 videoHeight = mediaFormat.getInteger(MediaFormat.KEY_HEIGHT);
-                //TODO 回调视频宽高
                 duration = mediaFormat.getLong(MediaFormat.KEY_DURATION);
                 try {
                     videoDecoder = MediaCodec.createDecoderByType(mime);
@@ -104,6 +141,17 @@ public class MediaCodePlayer {
                 mediaCodecVideoTrack.start();
                 for (;;) {
                     mediaCodecVideoTrack.doDecodeWork();
+                }
+            }
+        }.start();
+
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                mediaCodecAudioTrack.start();
+                for (;;){
+                    mediaCodecAudioTrack.doDecodeWork();
                 }
             }
         }.start();

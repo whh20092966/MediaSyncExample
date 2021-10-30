@@ -22,7 +22,7 @@ public class MediaCodecVideoTrack extends MediaCodecTrack{
         ByteBuffer byteBuffer = mediaCodec.getInputBuffer(inputIndex);
 
         if (byteBuffer == null){
-            Log.e(TAG, "getInputBuffer error !");
+            MLog.d(TAG, "getInputBuffer error !");
             return;
         }
 
@@ -40,6 +40,7 @@ public class MediaCodecVideoTrack extends MediaCodecTrack{
     @Override
     public void onFormatChanged(MediaFormat newMediaFormat) {
         //TODO
+
     }
 
     private long lastPresentationTimeUs = 0;
@@ -47,7 +48,7 @@ public class MediaCodecVideoTrack extends MediaCodecTrack{
     public void onOutputBufferAvailable(int outputIndex, MediaCodec.BufferInfo bufferInfo) {
         //已经解码，并给到surface 渲染了的buffer, 要释放，重复复用
         if (MediaCodec.BUFFER_FLAG_END_OF_STREAM == bufferInfo.flags){
-            Log.d(TAG, "onOutputBufferAvailable BUFFER_FLAG_END_OF_STREAM");
+            MLog.d(TAG, "onOutputBufferAvailable BUFFER_FLAG_END_OF_STREAM");
         }
 
         if (lastPresentationTimeUs > 0){
