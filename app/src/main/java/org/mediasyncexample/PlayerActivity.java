@@ -22,7 +22,7 @@ public class PlayerActivity extends AppCompatActivity implements SurfaceHolder.C
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         mediaPlayer.setSurface(surfaceHolder.getSurface());
-        mediaPlayer.setDataSource("http://vfx.mtime.cn/Video/2019/02/04/mp4/190204084208765161.mp4");
+        mediaPlayer.setDataSource("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4");
         mediaPlayer.prepare();
         mediaPlayer.start();
     }

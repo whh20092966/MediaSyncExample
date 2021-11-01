@@ -53,6 +53,10 @@ public class MediaCodePlayer {
 
         prepareVideo();
 
+        //prepareAudio();
+    }
+
+    private void prepareAudio() {
         int trackCount = audioExtractor.getTrackCount();
         for (int track=0; track<trackCount; ++track){
             MediaFormat mediaFormat = audioExtractor.getTrackFormat(track);
@@ -64,6 +68,7 @@ public class MediaCodePlayer {
 
                 try {
                     audioDecoder = MediaCodec.createDecoderByType(mime);
+                    MLog.d(TAG, "audioDecoder name: " + audioDecoder.getName());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -118,7 +123,7 @@ public class MediaCodePlayer {
                 duration = mediaFormat.getLong(MediaFormat.KEY_DURATION);
                 try {
                     videoDecoder = MediaCodec.createDecoderByType(mime);
-
+                    MLog.d(TAG, "videoDecoder name: " + videoDecoder.getName());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -130,7 +135,7 @@ public class MediaCodePlayer {
             }
         }
 
-        mediaCodecVideoTrack = new MediaCodecVideoTrack(videoDecoder, videoExtractor);
+        mediaCodecVideoTrack = new MediaCodecVideoTrack(videoDecoder,  videoExtractor, surface);
     }
 
     public void start(){
@@ -145,7 +150,7 @@ public class MediaCodePlayer {
             }
         }.start();
 
-        new Thread(){
+        /*new Thread(){
             @Override
             public void run() {
                 super.run();
@@ -154,6 +159,6 @@ public class MediaCodePlayer {
                     mediaCodecAudioTrack.doDecodeWork();
                 }
             }
-        }.start();
+        }.start();*/
     }
 }

@@ -20,6 +20,7 @@ public abstract class MediaCodecTrack {
     }
 
     public void doDecodeWork(){
+
         int indexInput = mediaCodec.dequeueInputBuffer(10000);
         Log.d(TAG, "doDecodeWork indexInput " + indexInput);
         if (indexInput == MediaCodec.INFO_TRY_AGAIN_LATER){
